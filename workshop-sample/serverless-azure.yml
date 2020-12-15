@@ -1,0 +1,29 @@
+service: multicloud-calculator-with-storage-workshop
+
+provider:
+  name: azure
+  resourceGroup: multicloud
+  region: ${self:custom.config.region}
+  runtime: nodejs12
+  environment:
+    azAccount: ${self:custom.config.azAccount} 
+    azAccountKey: ${self:custom.config.azAccountKey}
+custom:
+  config: ${file(config.azure.json)}
+
+plugins:
+  - serverless-azure-functions
+
+package:
+  exclude:
+    - local.settings.json
+    - .vscode/**
+
+functions:
+  calculator:
+    handler: src/calculator-handler.handler
+    events:
+      - http: true
+        methods:
+          - POST
+        authLevel: anonymous

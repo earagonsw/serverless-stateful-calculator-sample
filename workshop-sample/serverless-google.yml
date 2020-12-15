@@ -1,0 +1,45 @@
+service: calculator-storage
+
+provider:
+  name: google
+  stage: dev
+  runtime: nodejs10
+  region: us-central1
+  project: ${self:custom.config.project_id}
+  credentials: ./.gcloud/keyfile.json
+  environment:
+    gcpProjectId: ${self:custom.config.project_id}
+    gcpClientEmail: ${self:custom.config.client_email}
+    gcpPrivateKey: ${self:custom.config.private_key}
+custom:
+  config: ${file(./.gcloud/keyfile.json)}
+  bucket: ${file(./config.google.json)}
+  # If you want to automate the policy assignment, uncomment the next block
+  # scripts:
+  #   hooks:
+  #     'after:deploy:deploy': gcloud functions add-iam-policy-binding ${self:service}-${self:provider.stage}-${opt:function, "calculator"} --member="allUsers" --role="roles/cloudfunctions.invoker" --project=${self:provider.project} --region=${self:provider.region}
+frameworkVersion: '2'
+
+package:
+  exclude:
+    - node_modules/**
+    - .gitignore
+    - .git/**
+
+functions:
+  calculator:
+    handler: handler
+    events:
+      - http: POST
+
+resources:
+  resources:
+    - type: storage.v1.bucket
+      name: ${self:custom.bucket.bucketName}
+      properties:
+        location: us-central1
+
+plugins:
+  - serverless-google-cloudfunctions
+  - serverless-offline
+  - serverless-plugin-scripts

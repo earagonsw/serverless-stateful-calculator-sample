@@ -1,0 +1,43 @@
+service: multicloud-calculator-storage-workshop
+provider:
+  name: aws
+  runtime: nodejs12.x
+  region: ${opt:region, self:custom.config.region}
+custom: 
+  config: ${file(config.aws.json)}
+functions:
+  calculator:
+    role: CalculatorRole
+    handler: src/calculator-handler.handler
+    events:
+      - http:
+          method: POST
+          path: /calculator
+resources:
+  Resources:
+    CalculatorBucket:
+      Type: AWS::S3::Bucket
+      DeletionPolicy: Retain
+      Properties:
+        BucketName: calculator-workshop
+    CalculatorRole:
+      DependsOn: CalculatorBucket
+      Type: AWS::IAM::Role
+      Properties:
+        RoleName: ${self:service}-role-${self:provider.stage}
+        AssumeRolePolicyDocument:
+          Statement:
+            - Action: sts:AssumeRole
+              Effect: Allow
+              Principal:
+                Service: lambda.amazonaws.com
+          Version: '2012-10-17'
+        Policies:
+          - PolicyName: ${self:service}-policy-${self:provider.stage}
+            PolicyDocument:
+              Statement:
+                - Effect: Allow
+                  Action:
+                    - 's3:*'
+                  Resource: arn:aws:s3:::calculator-workshop/*
+              Version: '2012-10-17'
