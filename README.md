@@ -6,12 +6,12 @@ The sample provided in this repository implements a Calculator API that can be d
 
 You can find the complete article describing the scenario tackled with this reference implementation [here](https://medium.com/southworks/a-hands-on-approach-in-the-journey-to-demystify-multi-cloud-df2eb328e48b).
 
-## [Serverless-extension](./serverless-extension) folder
+## [Serverless-extension Folder](./serverless-extension)
 
 Contains the multi-cloud middlewares required to deploy and run the workshop solution with GCP.
 
 > This folder is provided as a backup in case the corresponding PR is not yet integrated within serverless repository.
 
-## [Workshop-sample](/.workshop-sample) folder
+## [Workshop-sample Folder](./workshop-sample)
 
 Contains the calculator sample leveraging the same code baseline with all the configurations required to deploy and run it at the mentioned clouds.
